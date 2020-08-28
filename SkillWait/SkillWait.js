@@ -72,12 +72,12 @@ Game_Battler.prototype.onAllActionsEnd = function() {
 DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
   if (!DataManager_isDatabaseLoaded.call(this)) return false;
-  this.processATBNotetags1($dataSkills);
-  this.processATBNotetags1($dataItems);
+  this.processNoteCheck($dataSkills);
+  this.processNoteCheck($dataItems);
   return true;
 };
 
-DataManager.processATBNotetags1 = function(group) {
+DataManager.processNoteCheck = function(group) {
   for (var n = 1; n < group.length; n++) {
     var obj = group[n];
     var notedata = obj.note.split(/[\r\n]+/);
