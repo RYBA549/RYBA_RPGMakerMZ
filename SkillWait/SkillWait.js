@@ -41,7 +41,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * 次の条件に従って、本ソフトウェアのコピーを発行、配布、サブライセンス、および/または販売し、
  * 本ソフトウェアの提供を受けた者がそうすることを許可する。
  * 
- * 要するに割と自由です。適当に使いましょう。
+ * 要するに割と自由です。
  */
 
 (() => {
