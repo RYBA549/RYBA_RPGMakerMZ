@@ -80,7 +80,6 @@ DataManager.isDatabaseLoaded = function() {
 DataManager.processNoteCheck = function(group) {
   for (var n = 1; n < group.length; n++) {
     var obj = group[n];
-    var notedata = obj.note.split(/[\r\n]+/);
 
     obj.afterChargeATBRate = 1.0;
 
