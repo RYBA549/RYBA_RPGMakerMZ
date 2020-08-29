@@ -4,7 +4,7 @@
  * @url https://github.com/RYBA549/RYBA_RPGMakerMZ
  * @author RYBA
  *
- * @help CustomizeProgressType.js
+ * @help SkillWait.js
  * 
  * <AFTER_ATB_CHARGE_SPEED:100> normal.
  * <AFTER_ATB_CHARGE_SPEED:20> x5
