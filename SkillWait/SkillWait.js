@@ -45,6 +45,46 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  */
 
 (() => {
+Game_Battler.prototype.tpbAcceleration = function() {
+    const speed = this.tpbRelativeSpeed();
+    const referenceTime = $gameParty.tpbReferenceTime();
+    return speed / referenceTime * this.atbSpeedTickRev();
+};
+Game_Battler_prototype_initMembers = Game_Battler.prototype.initMembers;
+Game_Battler.prototype.initMembers = function() {
+    Game_Battler_prototype_initMembers.call(this);
+    this._atbSpeedTickRev = undefined;
+};
+Game_Battler.prototype.atbSpeedTickRev = function() {
+    if(this._atbSpeedTickRev === undefined) return 1.0;
+    return this._atbSpeedTickRev;
+  };
+Game_Battler.prototype.setAtbSpeedTickRev = function(value) {
+    this._atbSpeedTickRev = value;
+};
+Game_Battler._atbSpeedTickRev = 1.0;
+Game_Battler.prototype.initTpbChargeTime = function(advantageous) {
+    const speed = this.tpbRelativeSpeed();
+    this._tpbState = "charging";
+    this._tpbChargeTime = advantageous ? 1 : speed * Math.random() * 0.5;
+    if(this.isActor()){
+        if(this.actor().meta.FastTpbChargeTime){
+            this._tpbChargeTime = Number(this.actor().meta.FastTpbChargeTime);
+        }
+    }
+    
+    this._atbSpeedTickRev = undefined;
+    if (this.isRestricted()) {
+        this._tpbChargeTime = 0;
+    }
+};
+Game_Battler.prototype.finishTpbCharge = function() {
+    //console.log('ちゃーじかんりょう')
+    this._atbSpeedTickRev = undefined;
+    this._tpbState = "charged";
+    this._tpbTurnEnd = true;
+    this._tpbIdleTime = 0;
+};
 Game_Battler.prototype.checkSpd = function() {
     const actions = this._actions.filter(action => action.isValid());
     const items = actions.map(action => action.item());
