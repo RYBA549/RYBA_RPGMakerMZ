@@ -10,12 +10,12 @@
  * <AFTER_ATB_CHARGE_SPEED:20> x5
  * <AFTER_ATB_CHARGE_SPEED:200> x0.5
  * 
+ * <FastTpbChargeTime:1.0>
+ * 
  * MIT License Copyright (c) 2020 RYBA
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /*:ja
@@ -33,6 +33,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * 20に設定すると次にターンが回ってくるのに5倍時間がかかります。
  * 200に設定すると次にターンが回ってくるのに1/2で済みます。
  * 
+ * <FastTpbChargeTime:1.0>
+ * アクターかエネミーのメモ欄に指定します
+ * プログレスバーの初期値が固定した数値となります
+ * 0.0~1.0の間で指定します
+ * 
  * スキルだけでなくアイテムも行けます。
  *
  * 利用規約：
@@ -45,6 +50,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  */
 
 (() => {
+Game_Battler._atbSpeedTickRev = 1.0;
 Game_Battler.prototype.tpbAcceleration = function() {
     const speed = this.tpbRelativeSpeed();
     const referenceTime = $gameParty.tpbReferenceTime();
@@ -58,28 +64,24 @@ Game_Battler.prototype.initMembers = function() {
 Game_Battler.prototype.atbSpeedTickRev = function() {
     if(this._atbSpeedTickRev === undefined) return 1.0;
     return this._atbSpeedTickRev;
-  };
+    };
 Game_Battler.prototype.setAtbSpeedTickRev = function(value) {
     this._atbSpeedTickRev = value;
 };
-Game_Battler._atbSpeedTickRev = 1.0;
+const  Game_Battler_initTpbChargeTime =  Game_Battler.prototype.initTpbChargeTime;
 Game_Battler.prototype.initTpbChargeTime = function(advantageous) {
-    const speed = this.tpbRelativeSpeed();
-    this._tpbState = "charging";
-    this._tpbChargeTime = advantageous ? 1 : speed * Math.random() * 0.5;
-    if(this.isActor()){
-        if(this.actor().meta.FastTpbChargeTime){
-            this._tpbChargeTime = Number(this.actor().meta.FastTpbChargeTime);
+    Game_Battler_initTpbChargeTime.call(this,advantageous);
+    let battler = this.isActor() ? this.actor() : this.enemy();
+    if(battler){
+        if(battler.meta.FastTpbChargeTime){
+            this._tpbChargeTime = Number(battler.meta.FastTpbChargeTime);
         }
     }
     
     this._atbSpeedTickRev = undefined;
-    if (this.isRestricted()) {
-        this._tpbChargeTime = 0;
-    }
+    
 };
 Game_Battler.prototype.finishTpbCharge = function() {
-    //console.log('ちゃーじかんりょう')
     this._atbSpeedTickRev = undefined;
     this._tpbState = "charged";
     this._tpbTurnEnd = true;
@@ -120,6 +122,7 @@ DataManager.isDatabaseLoaded = function() {
 DataManager.processNoteCheck = function(group) {
   for (var n = 1; n < group.length; n++) {
     var obj = group[n];
+    var notedata = obj.note.split(/[\r\n]+/);
 
     obj.afterChargeATBRate = 1.0;
 
