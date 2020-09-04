@@ -86,9 +86,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     const goldConsumeColor = Number(parameters['Consume Gold Color'] || 17);
     const variableConsumeColor = Number(parameters['Consume Variable Color'] || 20);
   
-    var _Scene_Boot_start = Scene_Boot.prototype.start;
+    const Scene_Boot_start = Scene_Boot.prototype.start;
     Scene_Boot.prototype.start = function() {
-      _Scene_Boot_start.call(this);
+      Scene_Boot_start.call(this);
       DataManager.processGoldCost();
     };
   
@@ -140,7 +140,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       return 0;
     }
 
-    Game_Party._virtualCostArray = 0;
+    Game_Party._virtualCostArray = [];
     const Game_Party_initialize = Game_Party.prototype.initialize;
     Game_Party.prototype.initialize = function() {
       this._virtualCostArray = [];
@@ -212,10 +212,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       return true;
     }
   
-    var _Game_BattlerBase_paySkillCost =
+    const Game_BattlerBase_paySkillCost =
       Game_BattlerBase.prototype.paySkillCost;
     Game_BattlerBase.prototype.paySkillCost = function(skill) {
-      _Game_BattlerBase_paySkillCost.call(this, skill);
+      Game_BattlerBase_paySkillCost.call(this, skill);
       let ary = skill.virtualCostArray;
       let len = ary.length;
       for(let i = 0; i < len; ++i){
@@ -226,7 +226,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       }
     };
   
-    var _Window_SkillList_drawSkillCost = 
+    const Window_SkillList_drawSkillCost = 
      Window_SkillList.prototype.drawSkillCost;
     Window_SkillList.prototype.drawSkillCost = function(skill, x, y, width) {
       if (this._actor.skillGoldCost(skill) > 0) {
@@ -240,7 +240,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         this.drawText(DataManager.getVirtualCostMost(skill.virtualCostArray), x, y, width, 'right');
         return;
       }
-      _Window_SkillList_drawSkillCost.call(this, skill, x, y, width);
+      Window_SkillList_drawSkillCost.call(this, skill, x, y, width);
     };
   
   })();
