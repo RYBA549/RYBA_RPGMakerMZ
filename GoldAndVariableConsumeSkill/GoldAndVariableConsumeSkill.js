@@ -96,7 +96,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       for (let i = 1; i < $dataSkills.length; i++) {
         let skill = $dataSkills[i];
         let result = skill.meta.GoldCost;
-        let arr = skill.meta.VirtualCostArray;
+        let arr = eval(skill.meta.VirtualCostArray);
         arr = Array.isArray(arr) ? arr : [];
         
         if (result){
