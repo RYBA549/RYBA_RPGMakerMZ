@@ -9,7 +9,7 @@
  * 
  * <SpendRateMp:1>
  * <SpendRateMaxMp:1>
- * <spendRateTp:0.5>
+ * <SpendRateTp:0.5>
  * 
  * MIT License Copyright (c) 2020 RYBA
  * 
