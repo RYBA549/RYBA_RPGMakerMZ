@@ -9,7 +9,7 @@
  * 
  * <SpendRateMp:1>
  * <SpendRateMaxMp:1>
- * <SpendRateTp:0.5>
+ * <spendRateTp:0.5>
  * 
  * MIT License Copyright (c) 2020 RYBA
  * 
@@ -33,8 +33,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * <SpendRateMaxMp:0.3>
  * この記述は最大MPの30%を消費する意味となります
  * 
- * <spendRateTp:0.5>
+ * <SpendRateTp:0.5>
  * この記述は現在TPの50%を消費する意味となります
+ * 
+ * <UpperMp:999>
+ * <LowerMp:1>
+ * 消費MPの上限と下限を設定します
+ * この設定は最終値に有効です
+ * 
+ * <UpperTp:100>
+ * <LowerTp:1>
+ * 消費TPの上限と下限を設定します
+ * この設定は最終値に有効です
  * 
  * これらの記述は併用できます。
  * スキル設定欄のMP消費を30にして<SpendRateMp:0.2>と<SpendRateMaxMp:0.1>にした場合
@@ -67,6 +77,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       Scene_Boot_start.call(this);
       DataManager.processMadante();
     };
+
+    DataManager.biludLimitData = function(lower, upper){
+        let result = {};
+        if(lower){
+            result.lower = Number(lower);
+        }
+        if(upper){
+            result.upper = Number(upper);
+        }
+        return result;
+    };
+
+    DataManager.limitNormalize = function(value,limitData){
+        if(!limitData){
+            return value;
+        }
+        if(limitData.lower){
+            if(limitData.lower > value){
+                return limitData.lower;
+            }
+        }
+        if(limitData.upper){
+            if(limitData.upper < value){
+                return limitData.upper;
+            }
+        }
+        return value;
+    };
   
     DataManager.processMadante = function() {
       for (let i = 1; i < $dataSkills.length; i++) {
@@ -83,7 +121,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if(spendRateTp){
             skill.spendRateTp = Number(spendRateTp);
         }
-        
+        skill.limitDataMp = this.biludLimitData(skill.meta.LowerMp, skill.meta.UpperMp);
+        skill.limitDataTp = this.biludLimitData(skill.meta.LowerTp, skill.meta.UpperTp);
       }
     };
 
@@ -119,7 +158,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 totalCost = 1;
             }
         }
-        return totalCost; 
+        return DataManager.limitNormalize(totalCost, skill.limitDataMp); 
     };
     
     const Game_BattlerBase_skillTpCost = Game_BattlerBase.prototype.skillTpCost;
@@ -138,20 +177,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 totalCost = 1;
             }
         }
-        return totalCost; 
-    };
 
-    // Game_Action.prototype.evalDamageFormula = function(target) {
-    //     try {
-    //         const item = this.item();
-    //         const a = this.subject(); // eslint-disable-line no-unused-vars
-    //         const b = target; // eslint-disable-line no-unused-vars
-    //         const v = $gameVariables._data; // eslint-disable-line no-unused-vars
-    //         const sign = [3, 4].includes(item.damage.type) ? -1 : 1;
-    //         const value = Math.max(eval(item.damage.formula), 0) * sign;
-    //         return isNaN(value) ? 0 : value;
-    //     } catch (e) {
-    //         return 0;
-    //     }
-    // };
+        return DataManager.limitNormalize(totalCost, skill.limitDataTp); 
+    };
 })();
