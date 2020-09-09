@@ -48,11 +48,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     const parameters = PluginManager.parameters('CustomCastTime');
     const castSpeedRate = Number(parameters['castSpeedRate'] || 0.001);
+    Game_Battler.prototype.updateTpbCastTime = function() {
+        if (this._tpbState === "casting") {
+            this._tpbCastTime += this.tpbAccelerationCast();
+            if (this._tpbCastTime >= this.tpbRequiredCastTime()) {
+                this._tpbCastTime = this.tpbRequiredCastTime();
+                this._tpbState = "ready";
+            }
+        }
+    };
     Game_Battler.prototype.tpbRequiredCastTime = function() {
+        return 1;
+    };
+
+    Game_Battler.prototype.tpbAccelerationCast = function(){
         const actions = this._actions.filter(action => action.isValid());
         const items = actions.map(action => action.item());
         const delay = items.reduce((r, item) => r + Math.max(0, -item.speed), 0);
-        return delay * castSpeedRate;
-    };
+        return this.tpbAcceleration() / (delay * castSpeedRate);
+    }
 
 })();
