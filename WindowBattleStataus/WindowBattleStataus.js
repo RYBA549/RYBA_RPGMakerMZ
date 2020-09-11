@@ -121,7 +121,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         return statusMaxCols;
     };
     Window_BattleStatus.prototype.maxItems = function() {
-        return statusMaxCols;
+        let count = $gameParty.battleMembers().length;
+        if( statusMaxCols < count){
+            count = statusMaxCols;
+        }
+        return count;
         //return $gameParty.battleMembers().length;
     };
     Window_BattleStatus.prototype.preparePartyRefresh = function() {
