@@ -26,7 +26,13 @@
  * @text w
  * @desc w
  * @type weapon
- *
+ * 
+ * @arg Insert
+ * @text Insert
+ * @desc Insert
+ * @type boolean
+ * @default false
+ * 
  * @command reset
  * @text Remove the actor with the specified ID.
  * @desc Remove the actor with the specified ID.
@@ -47,6 +53,12 @@
  * @text a
  * @desc a
  * @type armor
+ * 
+ * @arg Insert
+ * @text Insert
+ * @desc Insert
+ * @type boolean
+ * @default false
  * 
  * @command weaponSet
  * @text [変数指定版]指定アクターの指定スロットに武器を装備させます
@@ -69,6 +81,12 @@
  * @desc itemId
  * @type ItemId
  * 
+ * @arg Insert
+ * @text Insert
+ * @desc Insert
+ * @type boolean
+ * @default false
+ * 
  * @command armorSet
  * @text [変数指定版]指定アクターの指定スロットに防具を装備させます
  * @desc [変数指定版]指定アクターの指定スロットに防具を装備させます
@@ -90,6 +108,12 @@
  * @desc itemId
  * @type variable
  * @default 1
+ * 
+ * @arg Insert
+ * @text Insert
+ * @desc Insert
+ * @type boolean
+ * @default false
  * 
  * MIT License Copyright (c) 2020 RYBA
  * 
@@ -122,6 +146,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * @text 武器
  * @desc 武器リスト
  * @type weapon
+ * 
+ * @arg Insert
+ * @text 上書きするかどうか
+ * @desc 上書きするかどうか(trueにすると前に装備していたものは消えます)
+ * @type boolean
+ * @default false
  *
  * @command reset
  * @text 指定アクターの指定スロットに防具を装備させます
@@ -142,6 +172,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * @text 防具
  * @desc 防具リスト
  * @type armor
+ * 
+ * @arg Insert
+ * @text 上書きするかどうか
+ * @desc 上書きするかどうか(trueにすると前に装備していたものは消えます)
+ * @type boolean
+ * @default false
  * 
  * @command weaponSet
  * @text [変数指定版]指定アクターの指定スロットに武器を装備させます
@@ -165,6 +201,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * @type variable
  * @default 1
  * 
+ * @arg Insert
+ * @text 上書きするかどうか
+ * @desc 上書きするかどうか(trueにすると前に装備していたものは消えます)
+ * @type boolean
+ * @default false
+ * 
  * @command armorSet
  * @text [変数指定版]指定アクターの指定スロットに防具を装備させます
  * @desc [変数指定版]指定アクターの指定スロットに防具を装備させます
@@ -187,7 +229,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * @type variable
  * @default 1
  * 
+ * @arg Insert
+ * @text 上書きするかどうか
+ * @desc 上書きするかどうか(trueにすると前に装備していたものは消えます)
+ * @type boolean
+ * @default false
+ * 
  * @help ActorForceEquip.js
+ * 
+ * 指定アクターの指定スロットに武器or防具を装備させるプラグインコマンドを追加します。
+ * 基本的に変数指定版を活用することになります。
+ * 
+ * オプションのInsertをfalseにすると通常のツールの「装備変更」とほぼ同じ挙動となります。
  *
  * 利用規約：
  *  これにより、このソフトウェアおよび関連するドキュメントファイル（以下「ソフトウェア」）のコピーを取得するすべての人に対して、
@@ -195,15 +248,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * 次の条件に従って、本ソフトウェアのコピーを発行、配布、サブライセンス、および/または販売し、
  * 本ソフトウェアの提供を受けた者がそうすることを許可する。
  */
-
 (() => {
     const pluginName = 'ActorForceEquip';
 
-    function RYBA_ForceEquip(actorId,slotId,item){
+    function RYBA_ForceEquipParam(args){
+        let result = {};
+        result.actorId = Number(args.Actor || 1);
+        result.slotId = Number(args.SlotId || 0);
+        if(args.Weapon){
+            result.itemId = Number(args.Weapon || 1);
+            result.item = $dataWeapons[result.itemId];
+        }else{
+            result.itemId = Number(args.Armor || 1);
+            result.item = $dataArmors[result.itemId];
+        }
+        result.insert = eval(args.Insert);
+        return result;
+    };
+    function RYBA_ForceEquip(param){
         let actor = null;
         
         for (const act of $gameParty.allMembers()) {
-            if( act.actorId() === actorId ){
+            if( act.actorId() === param.actorId ){
                 actor = act;
                 break;
             }
@@ -211,40 +277,30 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if(!actor){
             return;
         }
-    
-        actor.forceChangeEquip(slotId,item);
-    }
+
+        if(param.insert){
+            console.log('forceChangeEquip');
+            actor.forceChangeEquip(param.slotId,param.item);
+        }else{
+            console.log('oldItem.name()');
+            actor.changeEquip(param.slotId, param.item);
+        }
+    };
 
    PluginManager.registerCommand(pluginName, 'set', args => {
-     let actorId = Number(args.Actor || 1);
-     let slotId = Number(args.SlotId || 0);
-     let itemId = Number(args.Weapon || 1);
-     let item = $dataWeapons[itemId];
-     RYBA_ForceEquip(actorId,slotId,item);
+     RYBA_ForceEquip(RYBA_ForceEquipParam(args));
    });
  
    PluginManager.registerCommand(pluginName, 'reset', args => {
-    let actorId = Number(args.Actor || 1);
-    let slotId = Number(args.SlotId || 0);
-    let itemId = Number(args.Armor || 1);
-    let item = $dataArmors[itemId];
-    RYBA_ForceEquip(actorId,slotId,item);
+    RYBA_ForceEquip(RYBA_ForceEquipParam(args));
    });
 
    PluginManager.registerCommand(pluginName, 'weaponSet', args => {
-    let actorId = Number(args.ActorId || 1);
-    let slotId = Number(args.SlotId || 0);
-    let itemId = Number(args.ItemId || 1);
-    let item = $dataArmors[itemId];
-    RYBA_ForceEquip(actorId,slotId,item);
+    RYBA_ForceEquip(RYBA_ForceEquipParam(args));
    });
 
    PluginManager.registerCommand(pluginName, 'armorSet', args => {
-    let actorId = Number(args.ActorId || 1);
-    let slotId = Number(args.SlotId || 0);
-    let itemId = Number(args.ItemId || 1);
-    let item = $dataArmors[itemId];
-    RYBA_ForceEquip(actorId,slotId,item);
+    RYBA_ForceEquip(RYBA_ForceEquipParam(args));
    });
 
  })();
