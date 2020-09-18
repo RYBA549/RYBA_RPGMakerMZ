@@ -106,16 +106,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         }
     };
 
-    // Game_Battler.prototype.escape = function() {
-    //     if ($gameParty.inBattle()) {
-    //         this.hide();
-    //     }
-    //     this.clearActions();
-    //     this.clearStates();
-    //     const n = 0;
-    //     AudioManager.playStaticSe(n);
-    //     //SoundManager.playSystemSound(n);
-    //     //SoundManager.playEscape();
-    // };
-
 })();
