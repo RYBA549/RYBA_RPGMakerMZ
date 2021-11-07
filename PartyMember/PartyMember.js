@@ -86,7 +86,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     const pluginName = 'PartyMember';
 
    PluginManager.registerCommand(pluginName, 'set', args => {
-     let actorId = Number(args.ActorId || 0);
+     let valueId = Number(args.ActorId || 0);
+     let actorId = $gameVariables.value(valueId);
      let isAdd = 0;
      let init = Boolean(args.Initialize || false);
 
@@ -98,7 +99,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    });
  
    PluginManager.registerCommand(pluginName, 'reset', args => {
-    let actorId = Number(args.ActorId || 0);
+    let valueId = Number(args.ActorId || 0);
+    let actorId = $gameVariables.value(valueId);
     let isAdd = 1;
 
     //console.log('actor : ' + actorId + ':');
