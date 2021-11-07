@@ -258,7 +258,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if(args.Weapon){
             result.itemId = Number(args.Weapon || 1);
             result.item = $dataWeapons[result.itemId];
-        }else{
+        }else if(args.Armor){
             result.itemId = Number(args.Armor || 1);
             result.item = $dataArmors[result.itemId];
         }
@@ -295,12 +295,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     RYBA_ForceEquip(RYBA_ForceEquipParam(args));
    });
 
-   PluginManager.registerCommand(pluginName, 'weaponSet', args => {
-    RYBA_ForceEquip(RYBA_ForceEquipParam(args));
+   PluginManager.registerCommand(pluginName, 'weaponSet', args => {]
+    let result = {};
+    result.actorId = $gameVariables.value(Number(args.Actor || 1));
+    result.slotId = $gameVariables.value(Number(args.SlotId || 0));
+    result.itemId = $gameVariables.value(Number(args.ItemId || 0));
+    result.item = $dataWeapons[result.itemId];
+    result.insert = eval(args.Insert);
+    RYBA_ForceEquip(result);
    });
 
    PluginManager.registerCommand(pluginName, 'armorSet', args => {
-    RYBA_ForceEquip(RYBA_ForceEquipParam(args));
+    let result = {};
+    result.actorId = $gameVariables.value(Number(args.Actor || 1));
+    result.slotId = $gameVariables.value(Number(args.SlotId || 0));
+    result.itemId = $gameVariables.value(Number(args.ItemId || 0));
+    result.item = $dataArmors[result.itemId];
+    result.insert = eval(args.Insert);
+    RYBA_ForceEquip(result);
    });
 
  })();
