@@ -89,7 +89,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      let valueId = Number(args.ActorId || 0);
      let actorId = $gameVariables.value(valueId);
      let isAdd = 0;
-     let init = Boolean(args.Initialize || false);
+     let init = args.Initialize  === 'true';
 
      let params = [actorId,isAdd,init];
 
